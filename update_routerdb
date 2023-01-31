@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# you need to define $NETBOX_AUTH and NETBOX_URL in /etc/netbox_auth_token
+
+RDB=$(mktemp /tmp/gen_routerdb.XXXX)
+
+source /etc/netbox_auth_token
+curl -sk -H "Authorization: Token $NETBOX_AUTH" --compressed -H 'Connection: keep-alive'  \
+    "$NETBOX_URL/api/dcim/devices/?export=gen_routerdb" > $RDB
+
+# only overwrite routerdb if it's greater than 100 lines.
+if [ "$(wc -l $RDB | awk '{print $1}')" -lt "1000" ]; then
+    echo "Not updating routerdb because $RDB isn't > 1000 lines."
+    exit 1
+fi
+
+mv $RDB /rancid/var/network/router.db
+exit 0
