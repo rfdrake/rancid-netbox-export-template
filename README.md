@@ -26,18 +26,25 @@ device itself.
 Create a new "Custom Field"
 
 Name: rancid_type
+
 Label: Rancid Type
+
 Type: Selection
+
 Required: no
 
 Assigned Models:
+```
     dcim | device
     dcim | device role
     dcim | device type
     dcim | manufacturer
+```
 
 Values:
+
 Default Value: None
+
 Choices: airos, asa, casa, edgemax, edgerouter, foundry, ios, juniper, no_rancid, nxos, routeros, vyos, zhone, zynos
 
 # Export template setup
@@ -45,8 +52,11 @@ Choices: airos, asa, casa, edgemax, edgerouter, foundry, ios, juniper, no_rancid
 Create a new "Export Template"
 
 Name: gen_routerdb
+
 Description: Generate Rancid router.db file
+
 Attachment: no
+
 Assigned Models: dcim | device
 
 Template:
