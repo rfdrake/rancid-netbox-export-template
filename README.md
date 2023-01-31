@@ -18,7 +18,7 @@ come in.  Make a role called "Vyos Router" and specify the rancid_type to be
 "vyos".  This will be passed to all devices that run vyos.
 
 Finally, you may have a device that is completely unique and none of the above
-fit it's situation.  In this case you can override the rancid_type in the
+fit its situation.  In this case you can override the rancid_type in the
 device itself.
 
 # Custom Fields setup
