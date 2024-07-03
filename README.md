@@ -63,7 +63,7 @@ Template:
 ```
 {% for device in queryset %}
       {%- set type = device.cf.rancid_type
-                    or device.device_role.cf.rancid_type
+                    or device.role.cf.rancid_type
                     or device.device_type.cf.rancid_type
                     or device.device_type.manufacturer.cf.rancid_type
        -%}
