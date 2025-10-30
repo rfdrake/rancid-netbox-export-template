@@ -12,7 +12,7 @@ error() {
 }
 
 # if ROUTERDB_FILE isn't defined in the environment then use whatever they specified on the CLI. If it's not specified on the CLI then fallback to the hardcoded value
-ROUTERDB_FILE=${ROUTERDB_FILE:-${1:-/rancid/var/network/router.db}}
+ROUTERDB_FILE=${1:-${ROUTERDB_FILE:-/rancid/var/network/router.db}}
 
 if [ -z "$NETBOX_TOKEN" -o -z "$NETBOX_URL" ]; then
    error "NETBOX_TOKEN and NETBOX_URL must both be defined. You may need to create /etc/netbox_auth_token"
