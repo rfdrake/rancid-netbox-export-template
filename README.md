@@ -21,6 +21,11 @@ Finally, you may have a device that is completely unique and none of the above
 fit its situation.  In this case you can override the rancid_type in the
 device itself.
 
+# Setup
+
+To use this you will need a configuration file in /etc/netbox_auth_token.
+I've provided an example file which you can edit to suit your network.
+
 # Custom Fields setup
 
 Create a new "Custom Field"
@@ -79,5 +84,20 @@ Template:
 0 */4   * * *   rancid /usr/local/bin/update_routerdb && /rancid/bin/rancid-run
 ```
 
+## TODO: document how to do this with a systemd timer
 
+When using systemd I'd suggest making this a service which the rancid.service
+depends on. It shouldn't require it's own systemd timer, instead, whenever
+rancid starts it will run this first and only run rancid if update_routerdb
+succeeds.
+
+# file validation
+
+This tries to validate the router.db file in order to make sure the connection
+to netbox didn't return an error. This is to ensure that you don't try to turn
+an HTML error response into a router.db file.
+
+This is simple validation which won't catch all errors. If somehow you had a
+router listed twice with the same name the validator will not catch it. If you
+add a device with an invalid device type it won't catch it.
 

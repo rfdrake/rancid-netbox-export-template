@@ -1,18 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-# you need to define $NETBOX_AUTH and NETBOX_URL in /etc/netbox_auth_token
+# NETBOX_TOKEN and NETBOX_URL need to be defined, but they might be pulled in
+# from somewhere else. Source the /etc/netbox_auth_token file if it exists.
+if [ -f /etc/netbox_auth_token ]; then
+    . /etc/netbox_auth_token
+fi
+
+error() {
+    echo "$1"
+    exit 1
+}
+
+# if ROUTERDB_FILE isn't defined in the environment then use whatever they specified on the CLI. If it's not specified on the CLI then fallback to the hardcoded value
+ROUTERDB_FILE=${ROUTERDB_FILE:-${1:-/rancid/var/network/router.db}}
+
+if [ -z "$NETBOX_TOKEN" -o -z "$NETBOX_URL" ]; then
+   error "NETBOX_TOKEN and NETBOX_URL must both be defined. You may need to create /etc/netbox_auth_token"
+fi
 
 RDB=$(mktemp /tmp/gen_routerdb.XXXX)
 
-source /etc/netbox_auth_token
-curl -sk -H "Authorization: Token $NETBOX_AUTH" --compressed -H 'Connection: keep-alive'  \
+curl -sk -H "Authorization: Token $NETBOX_TOKEN" --compressed -H 'Connection: keep-alive'  \
     "$NETBOX_URL/api/dcim/devices/?export=gen_routerdb" > $RDB
 
-# only overwrite routerdb if it's greater than 100 lines.
-if [ "$(wc -l $RDB | awk '{print $1}')" -lt "1000" ]; then
-    echo "Not updating routerdb because $RDB isn't > 1000 lines."
-    exit 1
+# Check to see if router.db has at least 3 lines, so we aren't passing an
+# empty file.
+if [ "$(wc -l $RDB | awk '{print $1}')" -lt "3" ]; then
+    error "Not updating routerdb because $RDB isn't > 3 lines."
 fi
 
-mv $RDB /rancid/var/network/router.db
+# -q means quiet.  Exit with error code if any output would be printed.
+grep -qvE '^[[:alnum:]\.-]+;[[:alpha:]]+;(up|down)' < $RDB && error "Not updating routerdb because $RDB fails validation."
+
+mv $RDB $ROUTERDB_FILE
 exit 0
