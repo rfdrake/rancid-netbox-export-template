@@ -32,5 +32,6 @@ fi
 # -q means quiet.  Exit with error code if any output would be printed.
 grep -qvE '^[[:alnum:]\.-]+;[[:alpha:]]+;(up|down)' < $RDB && error "Not updating routerdb because $RDB fails validation."
 
+mv $ROUTERDB_FILE ${ROUTERDB_FILE}.bak
 mv $RDB $ROUTERDB_FILE
 exit 0
